@@ -17,18 +17,14 @@ void setup()
 {
   // thanks PhilB for this gamma table!
   // it helps convert RGB colors to what humans see
-  for (int i=0; i<256; i++) {
+  for (int i=0; i<256; i++) 
+  {
     float x = i;
     x /= 255;
     x = pow(x, 2.5);
     x *= 255;
       
-    if (commonAnode) {
-      gammatable[i] = 255 - x;
-    } else {
-      gammatable[i] = x;      
-    }
-    //Serial.println(gammatable[i]);
+    gammatable[i] = x;      
   }
   
   Serial.begin(115200);
