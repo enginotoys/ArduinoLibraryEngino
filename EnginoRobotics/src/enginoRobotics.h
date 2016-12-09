@@ -47,8 +47,8 @@ typedef enum CMD_LIST
 	RX_CMD_SET_LED_PWM,//checked
 	RX_CMD_SET_SERVO,
 	RX_CMD_GET_TOUCH, //checked
-	RX_CMD_GET_IR,
-	RX_CMD_GET_COLOUR,
+	RX_CMD_GET_IR, //checked
+	RX_CMD_GET_COLOUR, //checked
 	RX_CMD_GET_COLOUR_RED,
 	RX_CMD_GET_COLOUR_GREEN,
 	RX_CMD_GET_COLOUR_BLUE,
@@ -67,12 +67,11 @@ typedef enum CMD_LIST
 	RX_CMD_GET_ULTRASONIC, //checked
 	RX_CMD_CONFIG_PORT_SERVO180,
 	RX_CMD_CONFIG_PORT_LED_PWM, //checked
-	RX_CMD_CONFIG_PORT,
-	RX_CMD_CONFIG_LINE_IR_THRESHOLD,
-	RX_CMD_CONFIG_OBSTACLE_IR_THRESHOLD,
-	RX_CMD_CALIBRATE_THRESHOLD,
-	RX_CMD_START_IR_ENGINE,
-	RX_CMD_ACTIVE_PERIPHERAL_INIT
+	RX_CMD_CONFIG_PORT,//checked
+	RX_CMD_CONFIG_LINE_IR_THRESHOLD,//checked
+	RX_CMD_CONFIG_OBSTACLE_IR_THRESHOLD,//checked
+	RX_CMD_CALIBRATE_THRESHOLD, //checked
+	RX_CMD_START_IR_ENGINE //checked
 }cmd_t;
 
 class EnginoRobotics 
@@ -115,8 +114,8 @@ public:
 	void configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD);
 	void configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD);
 	void configPort(uint8_t port,uint8_t element,uint8_t state);
-	void condigLineIRThreshold();
-	void condigObstacleIRThreshold();
+	void condigLineIRThreshold(uint8_t ir_th);
+	void condigObstacleIRThreshold(uint8_t ir_th);
 	bool calibrateIRThreshold(uint8_t port);
 	void StartIREnigine();
 	void ActivePeripheralInit();

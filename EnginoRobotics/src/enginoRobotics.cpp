@@ -7,7 +7,7 @@ void EnginoRobotics::Begin()
   	pinMode(CS, OUTPUT);
   	digitalWrite(CS, HIGH);
 
-  	delay(1);
+  	delay(1); //give some time for the pin to go high before sending any commands
 }
 
 void EnginoRobotics::sendCMD(cmd_t spi_cmd)
@@ -152,7 +152,6 @@ bool EnginoRobotics::getIR(uint8_t port)
    	return getByteSPI();
 }
 
-
 void EnginoRobotics::getColour(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c)
 {
 	uint8_t buffer[8] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
@@ -188,6 +187,7 @@ uint16_t EnginoRobotics::getColourGreen()
 
 	return ((buffer[1] << 8) | (buffer[0]));
 } 
+
 uint16_t EnginoRobotics::getColourBlue()
 {
 	uint8_t buffer[2] = {0xFF,0xFF};
@@ -280,7 +280,6 @@ int16_t EnginoRobotics::getGyroX()
 	return ((buffer[1] << 8) | (buffer[0]));
 } 
 
-
 int16_t EnginoRobotics::getGyroY()
 {
 	uint8_t buffer[2] = {0xFF,0xFF};
@@ -291,7 +290,6 @@ int16_t EnginoRobotics::getGyroY()
 
 	return ((buffer[1] << 8) | (buffer[0]));
 } 
-
 
 int16_t EnginoRobotics::getGyroZ()
 {
@@ -304,7 +302,6 @@ int16_t EnginoRobotics::getGyroZ()
 	return ((buffer[1] << 8) | (buffer[0]));
 } 
 
-
 int16_t EnginoRobotics::getMPU6050Temp()
 {
 	uint8_t buffer[2] = {0xFF,0xFF};
@@ -315,7 +312,6 @@ int16_t EnginoRobotics::getMPU6050Temp()
 
 	return ((buffer[1] << 8) | (buffer[0]));
 } 
-
 
 void EnginoRobotics::getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp)
 {
@@ -334,16 +330,10 @@ void EnginoRobotics::getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* 
   	*temp = ((buffer[13] << 8) | (buffer[12]));
 } 
 
-
 void EnginoRobotics::getNRF52Temp()
 {
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x05);
-	Serial.write(0x1A);
-	Serial.write(0xEE);
-} 
 
+} 
 
 uint16_t EnginoRobotics::getUltrasonic()
 {
@@ -358,15 +348,9 @@ uint16_t EnginoRobotics::getUltrasonic()
 
 void EnginoRobotics::configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD)
 {
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x09);
-	Serial.write(0x1C);
-	Serial.write(portA);
-	Serial.write(portB);
-	Serial.write(portC);
-	Serial.write(portD);
-	Serial.write(0xEE);
+	uint8_t buffer[5] = {RX_CMD_CONFIG_PORT_SERVO180, portA, portB, portC, portD};
+
+   	sendBuff(buffer, 5);
 }
 
 void EnginoRobotics::configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD)
@@ -384,50 +368,37 @@ void EnginoRobotics::configPort(uint8_t port, uint8_t element,uint8_t state)
    	sendBuff(buffer, 4);
 }
 
-void EnginoRobotics::condigLineIRThreshold()
+void EnginoRobotics::condigLineIRThreshold(uint8_t ir_th)
 {
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x05);
-	Serial.write(0x1F);
-	Serial.write(0xEE);
+	uint8_t buffer[2] = {RX_CMD_CONFIG_LINE_IR_THRESHOLD, ir_th};
+
+   	sendBuff(buffer, 2);
 }
 
-
-void EnginoRobotics::condigObstacleIRThreshold()
+void EnginoRobotics::condigObstacleIRThreshold(uint8_t ir_th)
 {
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x05);
-	Serial.write(0x20);
-	Serial.write(0xEE);
-}
+	uint8_t buffer[2] = {RX_CMD_CONFIG_OBSTACLE_IR_THRESHOLD, ir_th};
 
+   	sendBuff(buffer, 2);
+}
 
 bool EnginoRobotics::calibrateIRThreshold(uint8_t port)
 {
-	uint8_t buffer[2] = {RX_CMD_CALIBRATE_THRESHOLD, port};
+	uint8_t buffer_tx[2] = {RX_CMD_CALIBRATE_THRESHOLD, port};
+	uint8_t buffer_rx[2] = {0xFF,0xFF};
 
-   	sendBuff(buffer, 2);
+   	sendBuff(buffer_tx, 2);
 
-   	return getByteSPI();
+   	while(buffer_rx[0] != 0x55)
+   	{	
+   		getBufferSPI(buffer_rx, 2);
+   		delay(237);
+   	}
+   	
+   	return buffer_rx[1];
 }
-
 
 void EnginoRobotics::StartIREnigine()
 {
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x05);
-	Serial.write(0x22);
-	Serial.write(0xEE);
-}
-
-void EnginoRobotics::ActivePeripheralInit()
-{
-	Serial.write(0xFF);
-	Serial.write(0xFA);
-	Serial.write(0x05);
-	Serial.write(0x23);
-	Serial.write(0xEE);
+	sendCMD(RX_CMD_START_IR_ENGINE);
 }
