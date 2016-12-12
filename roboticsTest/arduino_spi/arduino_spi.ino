@@ -7,6 +7,9 @@ uint8_t buffer[10] = {};
 uint8_t i = 0;
 uint8_t j = 0;
 uint8_t k = 0;
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+int16_t temp;
 
 // our RGB -> eye-recognized gamma color
 byte gammatable[256];
@@ -30,8 +33,9 @@ void setup()
   Serial.begin(115200);
   ERP.Begin();
   ERP.configPortLedPWM(MOTORA, EMPTY, EMPTY, EMPTY);
-  ERP.configPort(SENSOR2, ULTRASONIC, NULL);
+  ERP.configPort(SENSOR2, ULTRASONIC, false);
   ERP.configPort(LED2, COLOUR, false);
+  ERP.configPort(SENSOR1, MPU6050, false);
   //ERP.configPort(LED1, TOUCH, NULL);
 
 //  ERP.configPort(MOTORC, IR_OBSTACLE, NULL);
@@ -88,7 +92,7 @@ void loop()
   Serial.print("\t");
   Serial.print((int)r, HEX); Serial.print((int)g, HEX); Serial.print((int)b, HEX);
   Serial.println();
-Serial.print((int)r ); Serial.print(" "); Serial.print((int)g);Serial.print(" ");  Serial.println((int)b );
+  //Serial.print((int)r ); Serial.print(" "); Serial.print((int)g);Serial.print(" ");  Serial.println((int)b );
   ERP.setRGB(r,g,b);
   /*Serial.write(ERP.getERPType(),10);
   Serial.println();
@@ -108,6 +112,17 @@ Serial.print((int)r ); Serial.print(" "); Serial.print((int)g);Serial.print(" ")
 //  i++;
 //  j++;
 //  k++; 
-  
-  delay (50);
+
+  ERP.getMPU6050(&ax, &ay, &az, &gx, &gy, &gz, &temp);
+
+  // display tab-separated accel/gyro x/y/z values
+  Serial.print("a/g:\t");
+  Serial.print(ax); Serial.print("\t");
+  Serial.print(ay); Serial.print("\t");
+  Serial.print(az); Serial.print("\t");
+  Serial.print(gx); Serial.print("\t");
+  Serial.print(gy); Serial.print("\t");
+  Serial.println(gz);
+        
+  delay (40);
 }

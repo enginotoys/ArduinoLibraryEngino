@@ -216,7 +216,7 @@ void EnginoRobotics::getAcc(int16_t* x, int16_t* y, int16_t* z)
 
 	sendCMD(RX_CMD_GET_ACC);
 
-	getBufferSPI(buffer, 8);
+	getBufferSPI(buffer, 6);
 
  	*x = ((buffer[1] << 8) | (buffer[0]));
   	*y = ((buffer[3] << 8) | (buffer[2]));
@@ -262,7 +262,7 @@ void EnginoRobotics::getGyro(int16_t* x, int16_t* y, int16_t* z)
 
 	sendCMD(RX_CMD_GET_GYRO);
 
-	getBufferSPI(buffer, 8);
+	getBufferSPI(buffer, 6);
 
  	*x = ((buffer[1] << 8) | (buffer[0]));
   	*y = ((buffer[3] << 8) | (buffer[2]));
@@ -319,7 +319,7 @@ void EnginoRobotics::getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* 
 
 	sendCMD(RX_CMD_GET_MPU6050);
 
-	getBufferSPI(buffer, 8);
+	getBufferSPI(buffer, 14);
 
  	*ax = ((buffer[1] << 8) | (buffer[0]));
   	*ay = ((buffer[3] << 8) | (buffer[2]));
