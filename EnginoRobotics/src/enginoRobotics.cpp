@@ -12,7 +12,7 @@ void EnginoRobotics::Begin()
 
 void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 {
-	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(5000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(spi_cmd);
@@ -25,7 +25,7 @@ void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 
 void EnginoRobotics::sendBuff(uint8_t * packet, uint8_t len)
 {
-	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(packet, len);
@@ -40,7 +40,7 @@ uint8_t EnginoRobotics::getByteSPI()
 {
 	uint8_t temp;
 
-	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	temp = SPI.transfer(0xFF);
@@ -55,7 +55,7 @@ uint8_t EnginoRobotics::getByteSPI()
 
 void EnginoRobotics::getBufferSPI(uint8_t * dataBuf, uint8_t len)
 {
-	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(dataBuf, len);
@@ -136,11 +136,19 @@ void EnginoRobotics::setServo(uint8_t channel, uint8_t angle)
 
 bool EnginoRobotics::getTouch(uint8_t port)
 {
-	uint8_t buffer[2] = {RX_CMD_GET_TOUCH, port};
+	uint8_t buffer_tx[2] = {RX_CMD_GET_TOUCH, port};
+	uint8_t buffer_rx[2] = {0xFF,0xFF};
 
-   	sendBuff(buffer, 2);
+   	sendBuff(buffer_tx, 2);
 
-   	return getByteSPI();
+   	//return getByteSPI();
+
+   	while(buffer_rx[0] != 0x55)
+   	{	
+   		getBufferSPI(buffer_rx, 2);
+   	}
+   	
+   	return buffer_rx[1];
 }
 
 bool EnginoRobotics::getIR(uint8_t port)
