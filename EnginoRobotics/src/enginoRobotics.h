@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <inttypes.h>
 
-#define SPI_DELAY			50
+#define SPI_DELAY			500
 #define CS 					9
 
 #define CLOCKWISE			0x10
@@ -84,10 +84,11 @@ private:
 
 public:
   	void Begin();
+  	bool isReady();
 	char * getERPType();
 	char * getHWVersion();
 	char * getFWVersion();
-    void setMotor(uint8_t port, uint8_t direction, uint8_t speed);
+    void setMotor(uint8_t port, uint8_t direction, uint8_t speed, uint32_t delay, uint32_t duration);
     void setRGB(uint8_t red, uint8_t green, uint8_t blue);  
 	void setLed(uint8_t port, uint8_t state);
 	void setLedPWM(uint8_t channel, uint8_t duty);

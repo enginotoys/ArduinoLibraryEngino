@@ -10,9 +10,27 @@ void EnginoRobotics::Begin()
   	delay(1); //give some time for the pin to go high before sending any commands
 }
 
+bool EnginoRobotics::isReady()
+{
+	uint8_t ready = 0xFF;
+
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	digitalWrite(CS, LOW);
+
+	ready = SPI.transfer(0);
+
+	digitalWrite(CS, HIGH);
+	SPI.endTransaction();
+
+	if (ready != 0x55)
+		return false;
+	else
+		return true; 
+}
+
 void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 {
-	SPI.beginTransaction(SPISettings(5000000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(spi_cmd);
@@ -25,7 +43,7 @@ void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 
 void EnginoRobotics::sendBuff(uint8_t * packet, uint8_t len)
 {
-	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(packet, len);
@@ -40,7 +58,7 @@ uint8_t EnginoRobotics::getByteSPI()
 {
 	uint8_t temp;
 
-	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	temp = SPI.transfer(0xFF);
@@ -55,7 +73,7 @@ uint8_t EnginoRobotics::getByteSPI()
 
 void EnginoRobotics::getBufferSPI(uint8_t * dataBuf, uint8_t len)
 {
-	SPI.beginTransaction(SPISettings(500000, MSBFIRST, SPI_MODE0));
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	digitalWrite(CS, LOW);
 
 	SPI.transfer(dataBuf, len);
@@ -74,6 +92,8 @@ char * EnginoRobotics::getERPType()
 
 	getBufferSPI(buffer, 10);
 
+	delayMicroseconds(SPI_DELAY);
+
 	return buffer;
 } 
 
@@ -84,6 +104,8 @@ char * EnginoRobotics::getHWVersion()
 	sendCMD(RX_CMD_GET_HW_VERSION);
 
 	getBufferSPI(buffer, 7);
+
+	delayMicroseconds(SPI_DELAY);
 
 	return buffer;
 } 
@@ -96,14 +118,28 @@ char * EnginoRobotics::getFWVersion()
 
 	getBufferSPI(buffer, 6);
 
+	delayMicroseconds(SPI_DELAY);
+
 	return buffer;
 } 
 
-void EnginoRobotics::setMotor(uint8_t port, uint8_t direction, uint8_t speed)
+void EnginoRobotics::setMotor(uint8_t port, uint8_t direction, uint8_t speed, uint32_t delay, uint32_t duration)
 {
-    uint8_t buffer[4] = {RX_CMD_SET_MOTOR, port, direction, speed};
 
-   	sendBuff(buffer, 4);
+    uint8_t buffer[12] = {RX_CMD_SET_MOTOR, port, direction, speed, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	buffer[4] = (uint8_t) ((delay & 0x000000FF) >> 0);
+    buffer[5] = (uint8_t) ((delay & 0x0000FF00) >> 8);
+    buffer[6] = (uint8_t) ((delay & 0x00FF0000) >> 16);
+    buffer[7] = (uint8_t) ((delay & 0xFF000000) >> 24);
+    buffer[8] = (uint8_t) ((duration & 0x000000FF) >> 0);
+    buffer[9] = (uint8_t) ((duration & 0x0000FF00) >> 8);
+    buffer[10] = (uint8_t) ((duration & 0x00FF0000) >> 16);
+    buffer[11] = (uint8_t) ((duration & 0xFF000000) >> 24);
+
+   	sendBuff(buffer, 12);
+
+	delayMicroseconds(1000);
 }
 
 void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue)
@@ -111,6 +147,8 @@ void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue)
 	uint8_t buffer[4] = {RX_CMD_SET_RGB, red, green, blue};
 
    	sendBuff(buffer, 4);
+
+   	delayMicroseconds(800);
 }
 
 void EnginoRobotics::setLed(uint8_t port, uint8_t state)
@@ -118,6 +156,8 @@ void EnginoRobotics::setLed(uint8_t port, uint8_t state)
 	uint8_t buffer[3] = {RX_CMD_SET_LED, port, state};
 
    	sendBuff(buffer, 3);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 void EnginoRobotics::setLedPWM(uint8_t channel, uint8_t duty)
@@ -132,23 +172,27 @@ void EnginoRobotics::setServo(uint8_t channel, uint8_t angle)
 	uint8_t buffer[3] = {RX_CMD_SET_SERVO, channel, angle};
 
    	sendBuff(buffer, 3);
+
+   	delayMicroseconds(500);
 }
 
 bool EnginoRobotics::getTouch(uint8_t port)
 {
 	uint8_t buffer_tx[2] = {RX_CMD_GET_TOUCH, port};
-	uint8_t buffer_rx[2] = {0xFF,0xFF};
+	//uint8_t buffer_rx[2] = {0xFF,0xFF};
 
    	sendBuff(buffer_tx, 2);
 
-   	//return getByteSPI();
+	delayMicroseconds(SPI_DELAY);
 
-   	while(buffer_rx[0] != 0x55)
+   	return getByteSPI();
+
+   	/*while(buffer_rx[0] != 0x55)
    	{	
    		getBufferSPI(buffer_rx, 2);
    	}
    	
-   	return buffer_rx[1];
+   	return buffer_rx[1];*/
 }
 
 bool EnginoRobotics::getIR(uint8_t port)
@@ -156,6 +200,8 @@ bool EnginoRobotics::getIR(uint8_t port)
 	uint8_t buffer[2] = {RX_CMD_GET_IR, port};
 
    	sendBuff(buffer, 2);
+
+   	delayMicroseconds(500);
 
    	return getByteSPI();
 }
@@ -359,6 +405,8 @@ void EnginoRobotics::configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, 
 	uint8_t buffer[5] = {RX_CMD_CONFIG_PORT_SERVO180, portA, portB, portC, portD};
 
    	sendBuff(buffer, 5);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 void EnginoRobotics::configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD)
@@ -367,6 +415,8 @@ void EnginoRobotics::configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC,
 	uint8_t buffer[5] = {RX_CMD_CONFIG_PORT_LED_PWM, portA, portB, portC, portD};
 
    	sendBuff(buffer, 5);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 void EnginoRobotics::configPort(uint8_t port, uint8_t element,uint8_t state)
@@ -374,6 +424,8 @@ void EnginoRobotics::configPort(uint8_t port, uint8_t element,uint8_t state)
 	uint8_t buffer[4] = {RX_CMD_CONFIG_PORT, port, element, state};
 
    	sendBuff(buffer, 4);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 void EnginoRobotics::condigLineIRThreshold(uint8_t ir_th)
@@ -381,6 +433,8 @@ void EnginoRobotics::condigLineIRThreshold(uint8_t ir_th)
 	uint8_t buffer[2] = {RX_CMD_CONFIG_LINE_IR_THRESHOLD, ir_th};
 
    	sendBuff(buffer, 2);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 void EnginoRobotics::condigObstacleIRThreshold(uint8_t ir_th)
@@ -388,6 +442,8 @@ void EnginoRobotics::condigObstacleIRThreshold(uint8_t ir_th)
 	uint8_t buffer[2] = {RX_CMD_CONFIG_OBSTACLE_IR_THRESHOLD, ir_th};
 
    	sendBuff(buffer, 2);
+
+   	delayMicroseconds(SPI_DELAY);
 }
 
 bool EnginoRobotics::calibrateIRThreshold(uint8_t port)
