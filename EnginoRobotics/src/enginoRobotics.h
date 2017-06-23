@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <inttypes.h>
 
-#define SPI_DELAY			500
+#define SPI_DELAY			50
 #define CS 					9
 
 #define CLOCKWISE			0x10
@@ -24,6 +24,16 @@ typedef enum portEnums
     PORT_NUMBER,
     EMPTY = 0xFF
 } portEnums;
+
+typedef enum screenBtnsEnumenum
+{
+	UP		= 0,
+	CANCEL,
+	DOWN,
+	LEFT,
+	OK,
+	RIGHT
+} screenBtn_t;
 
 enum IO_types {
     LED = 0,
@@ -94,12 +104,27 @@ typedef enum CMD_LIST
     RX_CMD_IS_RGB_RUNNING				= 54,
 	RX_CMD_IS_SERVO_RUNNING				= 55,
 	RX_CMD_SET_SERVO360					= 56,
+	RX_CMD_GET_GYRO_YPR					= 62,
+	RX_CMD_GET_RGB						= 63,
+	RX_CMD_SET_XA_OFFSET				= 64,
+	RX_CMD_SET_YA_OFFSET				= 65,
+	RX_CMD_SET_ZA_OFFSET				= 66,
+	RX_CMD_SET_XG_OFFSET				= 67,
+	RX_CMD_SET_YG_OFFSET				= 68,
+	RX_CMD_SET_ZG_OFFSET				= 69,
+	RX_CMD_SET_MPU_CALIBRATING			= 70,
+	RX_CMD_STOP_PROGRAM_ON_SCREEN		= 71,
+	RX_CMD_SPLASH_TEXT					= 72,
+	RX_CMD_GET_SCREEN_BUTTONS			= 73,
+	RX_CMD_SEND_SCREEN_BUTTONS			= 74,
 	MAX_CMDS
 }cmd_t;
 
 class EnginoRobotics
 {
 private:
+	void CS_LOW();
+	void CS_HIGH();
     void sendCMD(cmd_t spi_cmd);
     void getBufferSPI(uint8_t * dataBuf, uint8_t len);
     uint8_t getByteSPI();
@@ -122,6 +147,7 @@ public:
     bool getTouch(uint8_t port);
     bool getIR(uint8_t port);
     void getColour(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c);
+    void getRGB(uint8_t *r, uint8_t *g, uint8_t *b);
     uint16_t getColourRed();
     uint16_t getColourGreen();
     uint16_t getColourBlue();
@@ -136,6 +162,7 @@ public:
     int16_t getGyroZ();
     int16_t getMPU6050Temp();
     void getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp);
+    void getGyroYPR(int16_t* yaw, int16_t* pitch, int16_t* roll);	
     void getNRF52Temp();
     uint16_t getUltrasonic();
     void configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD);
@@ -143,7 +170,7 @@ public:
     void configPort(uint8_t port,uint8_t element,uint8_t state);
     void condigLineIRThreshold(uint8_t ir_th);
     void condigObstacleIRThreshold(uint8_t ir_th);
-    bool calibrateIRThreshold(uint8_t port);
+    uint8_t calibrateIRThreshold(uint8_t port);
     void StartIREnigine();
     bool isAnythingRunning();
     bool isLedRunning(uint8_t port);
@@ -151,6 +178,16 @@ public:
     bool isBuzzerRunning(void);
     bool isRGBRunning(void);
 	bool isServoRunning(uint8_t port);
+	void setXAccelOffset(uint16_t offset);
+	void setYAccelOffset(uint16_t offset);
+	void setZAccelOffset(uint16_t offset);
+	void setXGyroOffset(uint16_t offset);
+	void setYGyroOffset(uint16_t offset);
+	void setZGyroOffset(uint16_t offset);
+	void setMPUcalibrating(bool en);
+	void stopPlaying(void);
+	void print(uint16_t timeout, char s[]);
+	uint8_t getScreenBtn(screenBtn_t btn);
 };
 
 #endif
