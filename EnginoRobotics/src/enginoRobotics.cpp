@@ -19,7 +19,7 @@ void EnginoRobotics::CS_LOW()
 void EnginoRobotics::CS_HIGH()
 {
 	digitalWrite(CS, HIGH);
-	delayMicroseconds(4000);
+	delay(10);
 }
 
 bool EnginoRobotics::isReady()
@@ -144,13 +144,11 @@ void EnginoRobotics::setBuzzer(uint16_t frequency, uint16_t delay, uint16_t dura
    	sendBuff(buffer, 7); 
 }
 
-void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay, uint16_t duration)
+void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay1, uint16_t duration)
 {
-    uint8_t buffer[8] = {RX_CMD_SET_RGB, red, green, blue, (delay >> 8), delay, (duration >> 8), duration};
+    uint8_t buffer[8] = {RX_CMD_SET_RGB, red, green, blue, (delay1 >> 8), delay1, (duration >> 8), duration};
     
    	sendBuff(buffer, 8);
-    
-   	delayMicroseconds(8000);
 }
 
 void EnginoRobotics::setLed(uint8_t port, uint8_t state)
