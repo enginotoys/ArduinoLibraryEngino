@@ -117,6 +117,7 @@ typedef enum CMD_LIST
 	RX_CMD_SPLASH_TEXT					= 72,
 	RX_CMD_GET_SCREEN_BUTTONS			= 73,
 	RX_CMD_SEND_SCREEN_BUTTONS			= 74,
+	RX_CMD_SET_MAG_CALIBRATING			= 75,
 	MAX_CMDS
 }cmd_t;
 
@@ -188,6 +189,7 @@ public:
 	void stopPlaying(void);
 	void print(uint16_t timeout, char s[]);
 	uint8_t getScreenBtn(screenBtn_t btn);
+	uint8_t calibrateMag(void);
 };
 
 #endif

@@ -623,3 +623,18 @@ uint8_t EnginoRobotics::getScreenBtn(screenBtn_t btn)
     
    	return !((getByteSPI() >> btn) & 0x01);
 }
+
+uint8_t EnginoRobotics::calibrateMag(void)
+{
+	uint8_t buffer_rx[2] = {0xFF,0xFF};
+		
+   	sendCMD(RX_CMD_SET_MAG_CALIBRATING);
+    
+   	while(buffer_rx[0] != 0x55)
+   	{
+        getBufferSPI(buffer_rx, 2);
+        delay(237);
+   	}
+   	
+   	return buffer_rx[1];
+}
