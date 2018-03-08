@@ -46,8 +46,7 @@ enum IO_types {
     SERVO,
     LED_PWM,
     MOTOR,
-    SERVO360,
-    EMPTY
+    SERVO360
 };
 
 typedef enum CMD_LIST
