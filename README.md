@@ -2,6 +2,11 @@ This is a library for our arduino based robotics controller, the Produino.
 
 Pick one up today through our online shop at:  https://www.enginotoys.com
 
+Follow the guide here to install the library to your arduino enviroment
+https://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use/arduino-libraries
+
+Please see the examples for information on how to use the library. All functions are documented in their source files. For any questions please contact us at s.ioakim@engino.net
+
 # ENGINO Education
 STEM education is the latest trend in pedagogical science. STEM curriculum is based on the principle of educating students in 4 major disciplines – Science, Technology, Engineering and Mathematics – in an interdisciplinary and problem solving, creative approach.
 
@@ -24,7 +29,7 @@ Available plug and play peripherals:
 - DC motors
 - 180 degree servo motors
 - IR sensors for short distance obstacle or black/white line detection
-- Touchh sensors
+- Touch sensors
 - 3 Colours LEDs
 - Ultrasonic modules for longer distance obstacle detection
 - Colour sensors
@@ -55,3 +60,5 @@ Engino.net Ltd was founded in 2004 by Costas Sisamos in Cyprus. With degrees in 
 
 ## Engino mechanical system
 ENGINO® brand name uses the same initials, honoring this fundamental and innate human characteristic which empowers us to perform astonishing technological feats. Our children are gifted with this power and through creative play they learn how to exploit it. ENGINO® TOY SYSTEM is perhaps the most advanced and versatile three dimensional construction toy in the market today, offering unique opportunities for creation for both children and adults alike. The toy comprises of a system of multi-faceted rods and connectors that share some unique geometrical features that allow connectivity up to 6 sides simultaneously! In essence, this patent-pending design transforms rods into connectors, leading to builds that may be either dense or with large openings. This feature alone enables children to build fast and easy, simple or complex models, using a very low number of different components and a much lower quantity of parts.
+
+
