@@ -42,7 +42,11 @@ enum IO_types {
     TOUCH,
     ULTRASONIC,
     COLOUR,
-    MPU6050
+    MPU6050,
+    SERVO,
+    LED_PWM,
+    MOTOR,
+    SERVO360
 };
 
 typedef enum CMD_LIST
@@ -118,78 +122,73 @@ typedef enum CMD_LIST
 	RX_CMD_GET_SCREEN_BUTTONS			= 73,
 	RX_CMD_SEND_SCREEN_BUTTONS			= 74,
 	RX_CMD_SET_MAG_CALIBRATING			= 75,
-	MAX_CMDS
+	MAX_CMDS                                ,
+    RX_CMD_TEST_SPI                     = 250
 }cmd_t;
 
 class EnginoRobotics
 {
 private:
-	void CS_LOW();
-	void CS_HIGH();
-    void sendCMD(cmd_t spi_cmd);
-    void getBufferSPI(uint8_t * dataBuf, uint8_t len);
-    uint8_t getByteSPI();
-    void sendBuff(uint8_t * packet, uint8_t len);
+	void            CS_LOW();
+	void            CS_HIGH();
+    void            sendCMD(cmd_t spi_cmd);
+    void            getBufferSPI(uint8_t * dataBuf, uint8_t len);
+    uint8_t         getByteSPI();
+    void            sendBuff(uint8_t * packet, uint8_t len);
     
 public:
-    void Begin();
-    bool isReady();
-    uint8_t * getERPType();
-    uint8_t * getHWVersion();
-    uint8_t * getFWVersion();
-    void setMotor(uint8_t port, uint8_t direction, uint8_t speed, uint32_t delay, uint32_t duration);
-    void setBuzzer(uint16_t frequency, uint16_t delay, uint16_t duration);
-    void setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay, uint16_t duration);
-    void setLed(uint8_t port, uint8_t state);
-    void setLed(uint8_t port, uint8_t state, uint16_t delay, uint16_t duration);
-    void setLedPWM(uint8_t channel, uint8_t duty);
-    void setServo180(uint8_t channel, uint8_t angle, uint16_t delay, uint16_t duration);
-    void setServo360(uint8_t channel, uint8_t direction, uint8_t speed, uint16_t delay, uint16_t duration);
-    bool getTouch(uint8_t port);
-    bool getIR(uint8_t port);
-    void getColour(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c);
-    void getRGB(uint8_t *r, uint8_t *g, uint8_t *b);
-    uint16_t getColourRed();
-    uint16_t getColourGreen();
-    uint16_t getColourBlue();
-    uint16_t getColourClear();
-    void getAcc(int16_t* x, int16_t* y, int16_t* z);
-    int16_t getAccX();
-    int16_t getAccY();
-    int16_t getAccZ();
-    void getGyro(int16_t* x, int16_t* y, int16_t* z);
-    int16_t getGyroX();
-    int16_t getGyroY();
-    int16_t getGyroZ();
-    int16_t getMPU6050Temp();
-    void getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp);
-    void getGyroYPR(int16_t* yaw, int16_t* pitch, int16_t* roll);	
-    void getNRF52Temp();
-    uint16_t getUltrasonic();
-    void configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD);
-    void configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD);
-    void configPort(uint8_t port,uint8_t element,uint8_t state);
-    void condigLineIRThreshold(uint8_t ir_th);
-    void condigObstacleIRThreshold(uint8_t ir_th);
-    uint8_t calibrateIRThreshold(uint8_t port);
-    void StartIREnigine();
-    bool isAnythingRunning();
-    bool isLedRunning(uint8_t port);
-    bool isMotorRunning(uint8_t port);
-    bool isBuzzerRunning(void);
-    bool isRGBRunning(void);
-	bool isServoRunning(uint8_t port);
-	void setXAccelOffset(uint16_t offset);
-	void setYAccelOffset(uint16_t offset);
-	void setZAccelOffset(uint16_t offset);
-	void setXGyroOffset(uint16_t offset);
-	void setYGyroOffset(uint16_t offset);
-	void setZGyroOffset(uint16_t offset);
-	void setMPUcalibrating(bool en);
-	void stopPlaying(void);
-	void print(uint16_t timeout, char s[]);
-	uint8_t getScreenBtn(screenBtn_t btn);
-	uint8_t calibrateMag(void);
+    void            Begin();
+    bool            isReady();
+    uint8_t *       EnginoRobotics::getERPType();
+    uint8_t *       getHWVersion();
+    uint8_t *       getFWVersion();
+    void            setMotor(uint8_t port, uint8_t direction, uint8_t speed, uint32_t delay, uint32_t duration);
+    void            setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay1, uint16_t duration);
+    void            setLed(uint8_t port, uint8_t state, uint16_t delay, uint16_t duration);
+    void            setServo180(uint8_t port, uint8_t angle, uint16_t delay, uint16_t duration);
+    bool            getTouch(uint8_t port);
+    bool            getIR(uint8_t port);
+    void            getColour(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c);
+    uint16_t        getColourRed();
+    uint16_t        getColourGreen();
+    uint16_t        getColourBlue();
+    uint16_t        getColourClear();
+    void            getAcc(int16_t* x, int16_t* y, int16_t* z);
+    int16_t         getAccX();
+    int16_t         getAccY();
+    int16_t         getAccZ();
+    void            getGyro(int16_t* x, int16_t* y, int16_t* z);
+    int16_t         getGyroX();
+    int16_t         getGyroY();
+    int16_t         getGyroZ();
+    int16_t         getMPU6050Temp();
+    void            getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp);
+    void            getNRF52Temp();
+    uint16_t        getUltrasonic();
+    uint8_t         calibrateIRThreshold(uint8_t port);
+    void            config_all(uint8_t * configuration);
+    void            setBuzzer(uint16_t frequency, uint16_t delay, uint16_t duration);
+    bool            isAnythingRunning();
+    bool            isLedRunning(uint8_t port);
+    bool            isMotorRunning(uint8_t port);
+    bool            isBuzzerRunning(void);
+    bool            isRGBRunning(void);
+    bool            isServoRunning(uint8_t port);
+    void            setServo360(uint8_t port, uint8_t direction, uint8_t speed, uint16_t delay, uint16_t duration);
+    void            getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll);
+    void            getRGB(uint8_t *r, uint8_t *g, uint8_t *b);
+    void            setXAccelOffset(uint16_t offset);
+    void            setYAccelOffset(uint16_t offset);
+    void            setZAccelOffset(uint16_t offset);
+    void            setXGyroOffset(uint16_t offset);
+    void            setYGyroOffset(uint16_t offset);
+    void            setZGyroOffset(uint16_t offset);
+    void            setMPUcalibrating(bool en);
+    void            stopPlaying(void);
+    void            print(uint16_t timeout, char s[]);
+    uint8_t         getScreenBtn(screenBtn_t btn);
+    uint8_t         calibrateMag(void);
+    void            testFunc(uint8_t what);
 };
 
 #endif

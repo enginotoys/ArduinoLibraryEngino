@@ -19,29 +19,31 @@ void EnginoRobotics::CS_LOW()
 void EnginoRobotics::CS_HIGH()
 {
 	digitalWrite(CS, HIGH);
-	delay(10);
+	delayMicroseconds(200);
 }
 
 bool EnginoRobotics::isReady()
 {
-    uint8_t ready = 0xFF;
+  uint8_t busy = 0xFF;
     
-    SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
 	CS_LOW();
 	    	
-    ready = SPI.transfer(0xFE);
+  busy = SPI.transfer(0xFD);
 	
-    CS_HIGH();
-    SPI.endTransaction();
+  CS_HIGH();
+  SPI.endTransaction();
 	
-    if (ready == 0xFE)
-        return false;
-    else
-        return true;
+  if (busy > 0)
+    return false;
+  else
+    return true;
 }
 
 void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 {
+  //while(!isReady());
+
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
     CS_LOW();
     
@@ -53,6 +55,8 @@ void EnginoRobotics::sendCMD(cmd_t spi_cmd)
 
 void EnginoRobotics::sendBuff(uint8_t * packet, uint8_t len)
 {
+  //while(!isReady());
+
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
     CS_LOW();
     
@@ -66,6 +70,8 @@ uint8_t EnginoRobotics::getByteSPI()
 {
     uint8_t temp;
     
+    //while(!isReady());
+
     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
     CS_LOW();
     
@@ -137,53 +143,25 @@ void EnginoRobotics::setMotor(uint8_t port, uint8_t direction, uint8_t speed, ui
    	sendBuff(buffer, 12);
 }
 
-void EnginoRobotics::setBuzzer(uint16_t frequency, uint16_t delay, uint16_t duration)
-{
-    uint8_t buffer[7] = {RX_CMD_BUZZER, (frequency >> 8), frequency,  (delay >> 8), delay, (duration >> 8), duration};
-    
-   	sendBuff(buffer, 7); 
-}
-
 void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay1, uint16_t duration)
 {
     uint8_t buffer[8] = {RX_CMD_SET_RGB, red, green, blue, (delay1 >> 8), delay1, (duration >> 8), duration};
     
-   	sendBuff(buffer, 8);
-}
-
-void EnginoRobotics::setLed(uint8_t port, uint8_t state)
-{
-    uint8_t buffer[3] = {RX_CMD_SET_LED, port, state};
-    
-   	sendBuff(buffer, 3);
+    sendBuff(buffer, 8);
 }
 
 void EnginoRobotics::setLed(uint8_t port, uint8_t state, uint16_t delay, uint16_t duration)
 {
     uint8_t buffer[7] = {RX_CMD_LED_ADVANCED, port, state, (delay >> 8), delay, (duration >> 8), duration};
     
-   	sendBuff(buffer, 7);
+    sendBuff(buffer, 7);
 }
 
-void EnginoRobotics::setLedPWM(uint8_t channel, uint8_t duty)
+void EnginoRobotics::setServo180(uint8_t port, uint8_t angle, uint16_t delay, uint16_t duration)
 {
-    uint8_t buffer[3] = {RX_CMD_SET_LED_PWM, channel, duty};
+    uint8_t buffer[7] = {RX_CMD_SET_SERVO180, port, angle, (delay >> 8), delay, (duration >> 8), duration};
     
-   	sendBuff(buffer, 3);
-}
-
-void EnginoRobotics::setServo180(uint8_t channel, uint8_t angle, uint16_t delay, uint16_t duration)
-{
-    uint8_t buffer[7] = {RX_CMD_SET_SERVO180, channel, angle, (delay >> 8), delay, (duration >> 8), duration};
-    
-   	sendBuff(buffer, 7);
-}
-
-void EnginoRobotics::setServo360(uint8_t channel, uint8_t direction, uint8_t speed, uint16_t delay, uint16_t duration)
-{
-    uint8_t buffer[8] = {RX_CMD_SET_SERVO360, channel, direction, speed, (delay >> 8), delay, (duration >> 8), duration};
-    
-   	sendBuff(buffer, 8);
+    sendBuff(buffer, 7);
 }
 
 bool EnginoRobotics::getTouch(uint8_t port)
@@ -216,47 +194,6 @@ void EnginoRobotics::getColour(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *
     *g = ((buffer[3] << 8) | (buffer[2]));
     *b = ((buffer[5] << 8) | (buffer[4]));
     *c = ((buffer[7] << 8) | (buffer[6]));
-}
-
-void EnginoRobotics::getRGB(uint8_t *r, uint8_t *g, uint8_t *b)
-{
-    uint8_t buffer[3] = {0xFF, 0xFF,0xFF};
-    
-    sendCMD(RX_CMD_GET_RGB);
-    
-	getBufferSPI(buffer, 3);
-	
-    uint8_t r_init =  (buffer[0]);
-	uint8_t g_init =  (buffer[1]);
-	uint8_t b_init =  (buffer[2]);
-	uint8_t highest = 0;
-	if(r_init > highest){
-		highest = r_init;
-	}
-	if(g_init > highest){
-		highest = g_init;
-	}
-	if(b_init > highest){
-		highest = b_init;
-	}
-	uint8_t multiplier = 255 / highest;
-    *r = r_init * multiplier;
-    *g = g_init * multiplier;
-    *b = b_init * multiplier;
-	
-}
-	
-void EnginoRobotics::getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll)
-{
-    uint8_t buffer[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
-    
-    sendCMD(RX_CMD_GET_GYRO_YPR);
-    
-    getBufferSPI(buffer, 6);
-
-    *yaw = ((buffer[1] << 8) | (buffer[0]));
-    *pitch = ((buffer[3] << 8) | (buffer[2]));
-    *roll = ((buffer[5] << 8) | (buffer[4]));
 }
 
 uint16_t EnginoRobotics::getColourRed()
@@ -439,46 +376,6 @@ uint16_t EnginoRobotics::getUltrasonic()
     return ((buffer[1] << 8) | (buffer[0]));
 }
 
-void EnginoRobotics::configPortServo(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD)
-{
-    uint8_t buffer[5] = {RX_CMD_CONFIG_PORT_SERVO180, portA, portB, portC, portD};
-    
-   	sendBuff(buffer, 5);
-    
-	delay(1500);
-}
-
-void EnginoRobotics::configPortLedPWM(uint8_t portA,uint8_t portB,uint8_t portC, uint8_t portD)
-{
-    //need to give a bit more flexibility here.. allow one port setting at a time etc
-    uint8_t buffer[5] = {RX_CMD_CONFIG_PORT_LED_PWM, portA, portB, portC, portD};
-    
-   	sendBuff(buffer, 5);
-}
-
-void EnginoRobotics::configPort(uint8_t port, uint8_t element,uint8_t state)
-{
-    uint8_t buffer[4] = {RX_CMD_CONFIG_PORT, port, element, state};
-    
-   	sendBuff(buffer, 4);
-    
-	delay(500);
-}
-
-void EnginoRobotics::condigLineIRThreshold(uint8_t ir_th)
-{
-    uint8_t buffer[2] = {RX_CMD_CONFIG_LINE_IR_THRESHOLD, ir_th};
-    
-   	sendBuff(buffer, 2);
-}
-
-void EnginoRobotics::condigObstacleIRThreshold(uint8_t ir_th)
-{
-    uint8_t buffer[2] = {RX_CMD_CONFIG_OBSTACLE_IR_THRESHOLD, ir_th};
-    
-   	sendBuff(buffer, 2);
-}
-
 uint8_t EnginoRobotics::calibrateIRThreshold(uint8_t port)
 {
     uint8_t buffer_tx[2] = {RX_CMD_CALIBRATE_THRESHOLD, port};
@@ -495,9 +392,23 @@ uint8_t EnginoRobotics::calibrateIRThreshold(uint8_t port)
    	return buffer_rx[1];
 }
 
-void EnginoRobotics::StartIREnigine()
+void EnginoRobotics::config_all(uint8_t * configuration)
 {
-    sendCMD(RX_CMD_START_IR_ENGINE);
+  uint8_t buffer[15];
+
+  buffer[0] = RX_CMD_CONFIG_ALL;
+
+  for (uint8_t i = 0; i < 14; i++)
+    buffer[i+1] = configuration[i];
+
+  sendBuff(buffer, 15); 
+}
+
+void EnginoRobotics::setBuzzer(uint16_t frequency, uint16_t delay, uint16_t duration)
+{
+    uint8_t buffer[7] = {RX_CMD_BUZZER, (frequency >> 8), frequency,  (delay >> 8), delay, (duration >> 8), duration};
+    
+    sendBuff(buffer, 7); 
 }
 
 bool EnginoRobotics::isAnythingRunning()
@@ -546,6 +457,55 @@ bool EnginoRobotics::isServoRunning(uint8_t port)
    	sendBuff(buffer_tx, 2);
     
    	return getByteSPI();
+}
+
+
+void EnginoRobotics::setServo360(uint8_t port, uint8_t direction, uint8_t speed, uint16_t delay, uint16_t duration)
+{
+    uint8_t buffer[8] = {RX_CMD_SET_SERVO360, port, direction, speed, (delay >> 8), delay, (duration >> 8), duration};
+    
+    sendBuff(buffer, 8);
+}
+  
+void EnginoRobotics::getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll)
+{
+    uint8_t buffer[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+    
+    sendCMD(RX_CMD_GET_GYRO_YPR);
+    
+    getBufferSPI(buffer, 6);
+
+    *yaw = ((buffer[1] << 8) | (buffer[0]));
+    *pitch = ((buffer[3] << 8) | (buffer[2]));
+    *roll = ((buffer[5] << 8) | (buffer[4]));
+}
+
+void EnginoRobotics::getRGB(uint8_t *r, uint8_t *g, uint8_t *b)
+{
+    uint8_t buffer[3] = {0xFF, 0xFF,0xFF};
+    
+    sendCMD(RX_CMD_GET_RGB);
+    
+  getBufferSPI(buffer, 3);
+  
+    uint8_t r_init =  (buffer[0]);
+  uint8_t g_init =  (buffer[1]);
+  uint8_t b_init =  (buffer[2]);
+  uint8_t highest = 0;
+  if(r_init > highest){
+    highest = r_init;
+  }
+  if(g_init > highest){
+    highest = g_init;
+  }
+  if(b_init > highest){
+    highest = b_init;
+  }
+  uint8_t multiplier = 255 / highest;
+    *r = r_init * multiplier;
+    *g = g_init * multiplier;
+    *b = b_init * multiplier;
+  
 }
 
 void EnginoRobotics::setXAccelOffset(uint16_t offset)
@@ -637,4 +597,32 @@ uint8_t EnginoRobotics::calibrateMag(void)
    	}
    	
    	return buffer_rx[1];
+}
+
+void EnginoRobotics::testFunc(uint8_t what)
+{
+  uint8_t i;
+  uint8_t buffer[100];
+  uint8_t bufferRX[100];
+
+
+  buffer[0] = RX_CMD_TEST_SPI;
+
+  if (what == 0)
+  {
+    for (i = 1; i < 100; i++)
+      buffer[i] = i;
+  }
+  else
+  {
+    for (i = 1; i < 100; i++)
+      buffer[i] = 100 - i;
+  }
+
+  sendBuff(buffer, 100);
+
+  for (i = 0; i < 100; i++)
+      bufferRX[i] = 0;
+
+  getBufferSPI(bufferRX, 100);
 }
