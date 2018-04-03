@@ -611,7 +611,22 @@ uint16_t EnginoRobotics::getUltrasonic()
   return ((buffer[1] << 8) | (buffer[0]));
 }
 
-
+//this function is for configuring whcih peripherals are connected on the controller. This has to run on setup of the arduino once at every sketch.
+//running this onces will initiliase the sensors and prepare them for sending/receiving data.
+//this function expects an array of 14 bytes, 2 bytes per port
+/*
+  uint8_t port_config[14] = {LED, 0,
+                            SERVO,  0,
+                            LED,  0,
+                            ULTRASONIC, 0,
+                            LED,  0,
+                            LED,  0,
+                            LED,  0};
+                        */
+//first byte is port type (LED IR_OBSTACLE IR_LINE TOUCH ULTRASONIC COLOUR MPU6050 SERVO MOTOR)
+//second byte is the property of the port (only IR and COLOUR need a property, the rest should be 0)
+//IR property is a number from 0-100 and represent the sensitivity of the sensor, COLOUR property is 0 or 1 for wether the LED should be on
+//to illuminate the object or not
 void EnginoRobotics::config_all(uint8_t * configuration)
 {
   uint8_t buffer[15];
@@ -666,6 +681,8 @@ uint8_t EnginoRobotics::getScreenBtn(screenBtn_t btn)
     return !((getByteSPI() >> btn) & 0x01);
 }
 
+//this function automatically calibrates the magnetometer to properly calibrate, the sensor should be rotated 360 degrees during the calibration so that it detects the maximum magnetic field
+//returns true on success
 uint8_t EnginoRobotics::calibrateMag(void)
 {
   uint8_t buffer_rx[2] = {0xFF,0xFF};
