@@ -139,12 +139,16 @@ private:
 public:
     void            Begin();
     bool            isReady();
-    uint8_t *       EnginoRobotics::getERPType();
+    uint8_t *       getERPType();
     uint8_t *       getHWVersion();
     uint8_t *       getFWVersion();
+    void            setMotor(uint8_t port, uint8_t direction, uint8_t speed);
     void            setMotor(uint8_t port, uint8_t direction, uint8_t speed, uint32_t delay, uint32_t duration);
-    void            setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay1, uint16_t duration);
+    void            setRGB(uint8_t red, uint8_t green, uint8_t blue);
+    void            setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay, uint16_t duration);
+    void            setLed(uint8_t port, uint8_t state);
     void            setLed(uint8_t port, uint8_t state, uint16_t delay, uint16_t duration);
+    void            setServo180(uint8_t port, uint8_t angle);
     void            setServo180(uint8_t port, uint8_t angle, uint16_t delay, uint16_t duration);
     bool            getTouch(uint8_t port);
     bool            getIR(uint8_t port);
@@ -167,6 +171,7 @@ public:
     uint16_t        getUltrasonic();
     uint8_t         calibrateIRThreshold(uint8_t port);
     void            config_all(uint8_t * configuration);
+    void            setBuzzer(uint16_t frequency);
     void            setBuzzer(uint16_t frequency, uint16_t delay, uint16_t duration);
     bool            isAnythingRunning();
     bool            isLedRunning(uint8_t port);
@@ -174,7 +179,6 @@ public:
     bool            isBuzzerRunning(void);
     bool            isRGBRunning(void);
     bool            isServoRunning(uint8_t port);
-    void            setServo360(uint8_t port, uint8_t direction, uint8_t speed, uint16_t delay, uint16_t duration);
     void            getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll);
     void            getRGB(uint8_t *r, uint8_t *g, uint8_t *b);
     void            setXAccelOffset(uint16_t offset);
@@ -185,7 +189,8 @@ public:
     void            setZGyroOffset(uint16_t offset);
     void            setMPUcalibrating(bool en);
     void            stopPlaying(void);
-    void            print(uint16_t timeout, char s[]);
+    void            print(char s[], uint16_t timeout);
+    void            print(char s[]);
     uint8_t         getScreenBtn(screenBtn_t btn);
     uint8_t         calibrateMag(void);
     void            testFunc(uint8_t what);

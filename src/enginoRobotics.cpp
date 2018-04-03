@@ -184,7 +184,7 @@ void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue)
 //for a specific amount of delay time and duration time in a non blocking fashion
 void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t delay, uint16_t duration)
 {
-  uint8_t buffer[8] = {RX_CMD_SET_RGB, red, green, blue, (delay1 >> 8), delay, (duration >> 8), duration};
+  uint8_t buffer[8] = {RX_CMD_SET_RGB, red, green, blue, (delay >> 8), delay, (duration >> 8), duration};
     
   sendBuff(buffer, 8);
 }
