@@ -122,6 +122,7 @@ typedef enum CMD_LIST
 	RX_CMD_GET_SCREEN_BUTTONS			= 73,
 	RX_CMD_SEND_SCREEN_BUTTONS			= 74,
 	RX_CMD_SET_MAG_CALIBRATING			= 75,
+    RX_CMD_SET_WHITE_BALANCE            = 82,
 	MAX_CMDS                                ,
     RX_CMD_TEST_SPI                     = 250
 }cmd_t;
@@ -135,6 +136,8 @@ private:
     void            getBufferSPI(uint8_t * dataBuf, uint8_t len);
     uint8_t         getByteSPI();
     void            sendBuff(uint8_t * packet, uint8_t len);
+    uint16_t        calculateColorTemperature(uint16_t r, uint16_t g, uint16_t b);
+    uint16_t        calculateLux(uint16_t r, uint16_t g, uint16_t b);
     
 public:
     void            Begin();
@@ -157,6 +160,7 @@ public:
     uint16_t        getColourGreen();
     uint16_t        getColourBlue();
     uint16_t        getColourClear();
+    void            setWhiteBalance(void);
     void            getAcc(int16_t* x, int16_t* y, int16_t* z);
     int16_t         getAccX();
     int16_t         getAccY();
