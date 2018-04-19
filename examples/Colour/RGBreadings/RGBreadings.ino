@@ -11,6 +11,12 @@ void setup() {                            //PORT NAME
                              EMPTY, 0,    //SENSOR1, THRESHOLD
                              EMPTY, 0     //SENSOR2, THRESHOLD
                             };  
+
+  //color correction matrix, no correction applied at the moment
+  int16_t CCfactors[9] =  {10000, 0, 0,
+                           0, 10000, 0,
+                           0, 0, 10000};
+
   Serial.begin(115200);
   ERP.Begin();
   ERP.config_all(port_config);
@@ -19,6 +25,10 @@ void setup() {                            //PORT NAME
 
   ERP.setWhiteBalance(); //calibrating ambient or based on a specific white subject 
                          //such that the rest of the colour appear normal when RGB led is used to present them 
+  
+  ERP.setCCfactors(CCfactors); //colour correction based on the matrix defined above
+  //this matrix gets multiplied by the white balanced raw readings to get the colour correct representation of what the sensor is seeing  
+  
   delay(500);
 }
 

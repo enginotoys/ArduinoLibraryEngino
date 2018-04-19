@@ -123,6 +123,7 @@ typedef enum CMD_LIST
 	RX_CMD_SEND_SCREEN_BUTTONS			= 74,
 	RX_CMD_SET_MAG_CALIBRATING			= 75,
     RX_CMD_SET_WHITE_BALANCE            = 82,
+    RX_CMD_SET_CC_FACTORS               = 83,
 	MAX_CMDS                                ,
     RX_CMD_TEST_SPI                     = 250
 }cmd_t;
@@ -161,6 +162,7 @@ public:
     uint16_t        getColourBlue();
     uint16_t        getColourClear();
     void            setWhiteBalance(void);
+    void            setCCfactors(int16_t * CCfactors);
     void            getAcc(int16_t* x, int16_t* y, int16_t* z);
     int16_t         getAccX();
     int16_t         getAccY();

@@ -482,6 +482,33 @@ void EnginoRobotics::setWhiteBalance(void)
   sendCMD(RX_CMD_SET_WHITE_BALANCE);
 }
 
+void EnginoRobotics::setCCfactors(int16_t * CCfactors)
+{
+  uint8_t buffer[19];
+
+  buffer[0]  = RX_CMD_SET_CC_FACTORS;
+  buffer[1]  = CCfactors[0] >> 8;
+  buffer[2]  = CCfactors[0];
+  buffer[3]  = CCfactors[1] >> 8;
+  buffer[4]  = CCfactors[1];
+  buffer[5]  = CCfactors[2] >> 8;
+  buffer[6]  = CCfactors[2];
+  buffer[7]  = CCfactors[3] >> 8;
+  buffer[8]  = CCfactors[3];
+  buffer[9]  = CCfactors[4] >> 8;
+  buffer[10] = CCfactors[4];
+  buffer[11] = CCfactors[5] >> 8;
+  buffer[12] = CCfactors[5];
+  buffer[13] = CCfactors[6] >> 8;
+  buffer[14] = CCfactors[6];
+  buffer[15] = CCfactors[7] >> 8;
+  buffer[16] = CCfactors[7];
+  buffer[17] = CCfactors[8] >> 8;
+  buffer[18] = CCfactors[8];
+
+  sendBuff(buffer, 19); 
+}
+
 //function for getting the raw accelerometer data from its 3 axis.
 //values range -32765 - +32765 full scale range is 4G
 void EnginoRobotics::getAcc(int16_t* x, int16_t* y, int16_t* z)
