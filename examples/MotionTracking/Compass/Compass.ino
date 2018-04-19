@@ -2,6 +2,9 @@
 
 EnginoRobotics ERP;
 
+int16_t xOffset = 0;
+int16_t yOffset = 0;
+
 void setup() {                            //PORT NAME
   uint8_t port_config[14] = {EMPTY, 0,    //MOTORA
                              EMPTY, 0,    //MOTORB
@@ -17,6 +20,33 @@ void setup() {                            //PORT NAME
 
   delay(500);
 
+  //demonstrating magnetometer calibration and reading offsets before and after 
+  //so that they can be reused and avoid the messy calibration
+  ERP.getMagOffsets(&xOffset, &yOffset);
+  Serial.print("xoffset before calibration: ");
+  Serial.println(xOffset);
+  Serial.print(" yoffset before calibration: ");
+  Serial.println(yOffset);
+  delay(100);
+  
+  //during this command, the magnetometer has to be rotated slowly along its axis while being level to ground
+  Serial.println("Calibrating... Please rotate the magnetometer along its axis. Keep it level!");
+  delay(1000);
+  ERP.calibrateMag();
+  delay(100);
+  
+  ERP.getMagOffsets(&xOffset, &yOffset);
+  Serial.print("xoffset after calibration: ");
+  Serial.println(xOffset);
+  Serial.print(" yoffset after calibration: ");
+  Serial.println(yOffset);
+  delay(100);
+
+  //not needed to send the offsets again as calibration has already done that
+  //but putting this here for demonstration
+  ERP.setMagOffsets(xOffset, yOffset);
+
+  delay(100);
 }
 
 void loop() {
@@ -34,5 +64,5 @@ void loop() {
   Serial.println(gx);
 
 
-  delay(1000);   
+  delay(500);   
 }

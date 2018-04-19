@@ -124,6 +124,8 @@ typedef enum CMD_LIST
 	RX_CMD_SET_MAG_CALIBRATING			= 75,
     RX_CMD_SET_WHITE_BALANCE            = 82,
     RX_CMD_SET_CC_FACTORS               = 83,
+    RX_CMD_SET_MAG_OFFSETS              = 84,
+    RX_CMD_GET_MAG_OFFSETS              = 85,
 	MAX_CMDS                                ,
     RX_CMD_TEST_SPI                     = 250
 }cmd_t;
@@ -171,6 +173,8 @@ public:
     int16_t         getGyroX();
     int16_t         getGyroY();
     int16_t         getGyroZ();
+    void            setMagOffsets(int16_t xOffset, int16_t yOffset);
+    void            getMagOffsets(int16_t* xOffset, int16_t* yOffset);
     int16_t         getMPU6050Temp();
     void            getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp);
     void            getNRF52Temp();
