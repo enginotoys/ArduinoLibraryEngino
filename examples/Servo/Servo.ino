@@ -6,7 +6,7 @@ void setup() {                            //PORT NAME
   uint8_t port_config[14] = {EMPTY, 0,    //MOTORA
                              EMPTY, 0,    //MOTORB
                              EMPTY, 0,    //MOTORC
-                             SERVO, 0,    //LED1  - Port which Servo Module is connected
+                             SERVO, 90,    //LED1  - Port which Servo Module is connected, initial position
                              EMPTY, 0,    //LED2
                              EMPTY, 0,    //SENSOR1, THRESHOLD
                              EMPTY, 0     //SENSOR2, THRESHOLD

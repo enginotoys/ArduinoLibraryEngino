@@ -22,7 +22,7 @@ typedef enum portEnums
     SENSOR1,
     SENSOR2,
     PORT_NUMBER,
-    EMPTY = 0xFF
+    EMPTY = 0xFD
 } portEnums;
 
 typedef enum screenBtnsEnumenum
