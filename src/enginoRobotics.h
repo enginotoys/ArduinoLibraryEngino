@@ -1,3 +1,5 @@
+/*VERSION 1.0*/
+
 #ifndef __ENGINOROBOTICS_H__
 #define __ENGINOROBOTICS_H__
 
@@ -173,8 +175,8 @@ public:
     int16_t         getGyroX();
     int16_t         getGyroY();
     int16_t         getGyroZ();
-    void            setMagOffsets(int16_t xOffset, int16_t yOffset);
-    void            getMagOffsets(int16_t* xOffset, int16_t* yOffset);
+    void            setMagOffsets(int16_t xOffset, int16_t yOffset, int16_t zOffset);
+    void            getMagOffsets(int16_t* xOffset, int16_t* yOffset, int16_t* zOffset);
     int16_t         getMPU6050Temp();
     void            getMPU6050(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz, int16_t* temp);
     void            getNRF52Temp();
