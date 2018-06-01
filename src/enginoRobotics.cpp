@@ -668,7 +668,7 @@ void EnginoRobotics::getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll)
 void EnginoRobotics::setMagOffsets(int16_t xOffset, int16_t yOffset, int16_t zOffset,
                                    int16_t xScale,  int16_t yScale,  int16_t zScale)
 {
-  uint8_t buffer[7] = {RX_CMD_SET_MAG_OFFSETS, (xOffset >> 8), xOffset, 
+  uint8_t buffer[13] = {RX_CMD_SET_MAG_OFFSETS, (xOffset >> 8), xOffset, 
                                                (yOffset >> 8), yOffset, 
                                                (zOffset >> 8), zOffset,
                                                (xScale >> 8), xScale, 
