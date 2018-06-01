@@ -665,24 +665,34 @@ void EnginoRobotics::getGyroYPR(int16_t *yaw, int16_t *pitch, int16_t *roll)
     *roll = ((buffer[5] << 8) | (buffer[4]));
 }
 
-void EnginoRobotics::setMagOffsets(int16_t xOffset, int16_t yOffset, int16_t zOffset)
+void EnginoRobotics::setMagOffsets(int16_t xOffset, int16_t yOffset, int16_t zOffset,
+                                   int16_t xScale,  int16_t yScale,  int16_t zScale)
 {
-  uint8_t buffer[7] = {RX_CMD_SET_MAG_OFFSETS, (xOffset >> 8), xOffset, (yOffset >> 8), yOffset, (zOffset >> 8), zOffset};
+  uint8_t buffer[7] = {RX_CMD_SET_MAG_OFFSETS, (xOffset >> 8), xOffset, 
+                                               (yOffset >> 8), yOffset, 
+                                               (zOffset >> 8), zOffset,
+                                               (xScale >> 8), xScale, 
+                                               (yScale >> 8), yScale, 
+                                               (zScale >> 8), zScale};
   
-  sendBuff(buffer, 7);
+  sendBuff(buffer, 13);
 }
 
-void EnginoRobotics::getMagOffsets(int16_t* xOffset, int16_t* yOffset, int16_t* zOffset)
+void EnginoRobotics::getMagOffsets(int16_t* xOffset, int16_t* yOffset, int16_t* zOffset, 
+                                   int16_t* xScale,  int16_t* yScale,  int16_t* zScale)
 {
   uint8_t buffer[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
   
   sendCMD(RX_CMD_GET_MAG_OFFSETS);
     
-  getBufferSPI(buffer, 6);
+  getBufferSPI(buffer, 12);
 
   *xOffset = ((buffer[1] << 8) | (buffer[0]));
   *yOffset = ((buffer[3] << 8) | (buffer[2]));
   *zOffset = ((buffer[5] << 8) | (buffer[4]));
+  *xScale  = ((buffer[7] << 8) | (buffer[6]));
+  *yScale  = ((buffer[9] << 8) | (buffer[8]));
+  *zScale  = ((buffer[11] << 8) | (buffer[10]));
 }
 
 //function for getting the temperature of the nRF52 chip
@@ -786,7 +796,7 @@ uint8_t EnginoRobotics::calibrateMag(void)
     while(buffer_rx[0] != 0x55)
     {
         getBufferSPI(buffer_rx, 2);
-        delay(237);
+        delay(37);
     }
     
     return buffer_rx[1];
