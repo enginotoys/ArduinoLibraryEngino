@@ -193,8 +193,8 @@ void EnginoRobotics::setRGB(uint8_t red, uint8_t green, uint8_t blue, uint16_t d
 //for a specific amount of delay time and duration time in a non blocking fashion
 void EnginoRobotics::setBuzzer(uint16_t frequency)
 {
-  if (frequency < 500)
-    frequency = 500;
+  if ((frequency < 100) && (frequency != 0))
+    frequency = 100;
   else if (frequency > 15000)
     frequency = 15000;
 
