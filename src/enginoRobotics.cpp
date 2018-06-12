@@ -139,6 +139,8 @@ void EnginoRobotics::setMotor(uint8_t port, uint8_t direction, uint8_t speed)
 
   uint8_t buffer[12] = {RX_CMD_SET_MOTOR, port, direction, speed, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
      
+  delayMicroseconds(1000);
+	 
   sendBuff(buffer, 12);
 }
 
@@ -169,6 +171,8 @@ void EnginoRobotics::setMotor(uint8_t port, uint8_t direction, uint8_t speed, ui
   buffer[10] = (uint8_t) ((duration & 0x00FF0000) >> 16);
   buffer[11] = (uint8_t) ((duration & 0xFF000000) >> 24);
     
+  delayMicroseconds(1000);
+
   sendBuff(buffer, 12);
 }
 
