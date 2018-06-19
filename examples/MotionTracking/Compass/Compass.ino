@@ -4,6 +4,11 @@ EnginoRobotics ERP;
 
 int16_t xOffset = 0;
 int16_t yOffset = 0;
+int16_t zOffset = 0;
+
+int16_t xScale = 0;
+int16_t yScale = 0;
+int16_t zScale = 0;
 
 void setup() {                            //PORT NAME
   uint8_t port_config[14] = {EMPTY, 0,    //MOTORA
@@ -22,10 +27,18 @@ void setup() {                            //PORT NAME
 
   //demonstrating magnetometer calibration and reading offsets before and after 
   //so that they can be reused and avoid the messy calibration
-  ERP.getMagOffsets(&xOffset, &yOffset);
+  ERP.getMagOffsets(&xOffset, &yOffset, &zOffset, &xScale, &yScale, &zScale);
   Serial.print("xoffset before calibration: ");
   Serial.println(xOffset);
   Serial.print(" yoffset before calibration: ");
+  Serial.println(yOffset);
+  Serial.print(" zoffset before calibration: ");
+  Serial.println(zOffset);
+  Serial.print(" xScale before calibration: ");
+  Serial.println(xScale);
+  Serial.print(" yScale before calibration: ");
+  Serial.println(yScale);
+  Serial.print(" zScale before calibration: ");
   Serial.println(yOffset);
   delay(100);
   
@@ -35,16 +48,23 @@ void setup() {                            //PORT NAME
   ERP.calibrateMag();
   delay(100);
   
-  ERP.getMagOffsets(&xOffset, &yOffset);
+  ERP.getMagOffsets(&xOffset, &yOffset, &zOffset, &xScale, &yScale, &zScale);
   Serial.print("xoffset after calibration: ");
   Serial.println(xOffset);
   Serial.print(" yoffset after calibration: ");
   Serial.println(yOffset);
-  delay(100);
+  Serial.print(" zoffset after calibration: ");
+  Serial.println(zOffset);
+  Serial.print(" xScale after calibration: ");
+  Serial.println(xScale);
+  Serial.print(" yScale after calibration: ");
+  Serial.println(yScale);
+  Serial.print(" zScale after calibration: ");
+  Serial.println(yOffset);
 
   //not needed to send the offsets again as calibration has already done that
   //but putting this here for demonstration
-  ERP.setMagOffsets(xOffset, yOffset);
+  ERP.setMagOffsets(xOffset, yOffset, zOffset, xScale, yScale, zScale);
 
   delay(100);
 }
