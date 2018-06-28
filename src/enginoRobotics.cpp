@@ -23,7 +23,7 @@ void EnginoRobotics::CS_HIGH()
 {
 	digitalWrite(CS, HIGH);
   //the following delay ensures that the nrf52 has time to prepare it's buffers for the next transfer
-	delayMicroseconds(200);
+	delayMicroseconds(400);
 }
 
 //sending a command to the main nRF52 MCU to ask for something
